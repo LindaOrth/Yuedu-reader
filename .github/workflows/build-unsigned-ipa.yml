@@ -21,11 +21,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select Xcode
+      - name: Select latest Xcode
         run: |
-          if [ -d /Applications/Xcode_16.4.app ]; then
-            sudo xcode-select -s /Applications/Xcode_16.4.app
-          fi
+          XCODE_APP="$(ls -d /Applications/Xcode*.app | sort | tail -n 1)"
+          echo "Using Xcode at $XCODE_APP"
+          sudo xcode-select -s "$XCODE_APP"
           xcodebuild -version
 
       - name: Create CI Firebase placeholder
