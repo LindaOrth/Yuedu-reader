@@ -5,7 +5,7 @@ import StoreKit
 import os
 
 private let subscriptionAccountLog = Logger(
-    subsystem: "com.zhangruilin.yuedureader",
+    subsystem: "com.codex.yuedureader",
     category: "SubscriptionAccount"
 )
 

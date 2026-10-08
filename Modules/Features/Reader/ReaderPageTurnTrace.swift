@@ -27,7 +27,7 @@ import os
 @MainActor
 final class ReaderPageTurnTrace: NSObject {
     static let signposter = OSSignposter(
-        subsystem: Bundle.main.bundleIdentifier ?? "com.zhangruilin.yuedureader",
+        subsystem: Bundle.main.bundleIdentifier ?? "com.codex.yuedureader",
         category: "ReaderPerformance"
     )
 

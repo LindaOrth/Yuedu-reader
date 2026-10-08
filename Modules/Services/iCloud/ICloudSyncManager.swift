@@ -114,7 +114,7 @@ enum ICloudSignInSyncAction: Equatable {
 
 final class ICloudSyncManager: ObservableObject {
     static let shared = ICloudSyncManager()
-    static let containerIdentifier = "iCloud.com.zhangruilin.yuedureader"
+    static let containerIdentifier = "iCloud.com.codex.yuedureader"
 
     @Published private(set) var isSyncing = false
     @Published private(set) var accountStatus: CKAccountStatus = .couldNotDetermine

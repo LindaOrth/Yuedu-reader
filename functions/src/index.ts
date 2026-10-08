@@ -40,7 +40,7 @@ if (getApps().length === 0) {
 }
 
 const region = "asia-east1";
-const bundleId = "com.zhangruilin.yuedureader";
+const bundleId = "com.codex.yuedureader";
 const appAppleId = 6772972358;
 const db = getFirestore();
 

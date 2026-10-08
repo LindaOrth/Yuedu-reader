@@ -35,7 +35,7 @@
           "locale" : "en_US"
         }
       ],
-      "productID" : "com.zhangruilin.yuedureader.pro.lifetime",
+      "productID" : "com.codex.yuedureader.pro.lifetime",
       "referenceName" : "Yuedu Pro Lifetime",
       "type" : "NonConsumable"
     }
@@ -122,7 +122,7 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.zhangruilin.yuedureader.pro.monthly",
+          "productID" : "com.codex.yuedureader.pro.monthly",
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "Yuedu Pro Monthly",
           "subscriptionGroupID" : "4B1A0032-648A-4BE4-AAE6-86B68D25D05B",

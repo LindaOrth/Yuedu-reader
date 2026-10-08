@@ -10,8 +10,8 @@ import XCTest
 /// `SKTestSession` supplies them from `Configuration/YueduPro.storekit`, the file
 /// the scheme's Run action uses, with no purchase dialogs or Apple Account.
 final class ProStatusNavigationUITests: XCTestCase {
-    private static let monthlyID = "com.zhangruilin.yuedureader.pro.monthly"
-    private static let lifetimeID = "com.zhangruilin.yuedureader.pro.lifetime"
+    private static let monthlyID = "com.codex.yuedureader.pro.monthly"
+    private static let lifetimeID = "com.codex.yuedureader.pro.lifetime"
 
     override func setUpWithError() throws {
         continueAfterFailure = false

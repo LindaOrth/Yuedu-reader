@@ -3,7 +3,7 @@ import Foundation
 import os
 
 private let subscriptionICloudLog = Logger(
-    subsystem: "com.zhangruilin.yuedureader",
+    subsystem: "com.codex.yuedureader",
     category: "SubscriptionICloud"
 )
 

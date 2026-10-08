@@ -31,7 +31,7 @@ final class SubscriptionStore: ObservableObject {
     static let shared = SubscriptionStore()
 
     private static let subscriptionLog = Logger(
-        subsystem: "com.zhangruilin.yuedureader",
+        subsystem: "com.codex.yuedureader",
         category: "Subscription"
     )
 
@@ -97,8 +97,8 @@ final class SubscriptionStore: ObservableObject {
     /// The product identifiers configured in App Store Connect and the local
     /// `.storekit` file. Order here is the display order on the paywall.
     enum ProProduct: String, CaseIterable {
-        case lifetime = "com.zhangruilin.yuedureader.pro.lifetime"
-        case monthly = "com.zhangruilin.yuedureader.pro.monthly"
+        case lifetime = "com.codex.yuedureader.pro.lifetime"
+        case monthly = "com.codex.yuedureader.pro.monthly"
     }
 
     // MARK: - Published state

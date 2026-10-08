@@ -51,9 +51,9 @@ interface EnvironmentPayload {
 }
 
 /** One-time non-consumable: Pro forever, no expiry date on the binding. */
-export const lifetimeProductId = "com.zhangruilin.yuedureader.pro.lifetime";
+export const lifetimeProductId = "com.codex.yuedureader.pro.lifetime";
 /** Auto-renewable subscription: Pro until the current period ends. */
-export const monthlyProductId = "com.zhangruilin.yuedureader.pro.monthly";
+export const monthlyProductId = "com.codex.yuedureader.pro.monthly";
 
 const supportedProductIds = new Set([lifetimeProductId, monthlyProductId]);
 

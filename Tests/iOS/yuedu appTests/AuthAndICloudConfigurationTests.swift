@@ -11,7 +11,7 @@ struct AuthAndICloudConfigurationTests {
         #expect(entitlements["com.apple.developer.applesignin"] as? [String] == ["Default"])
         #expect(entitlements["com.apple.developer.icloud-services"] as? [String] == ["CloudKit"])
         #expect(entitlements["com.apple.developer.icloud-container-identifiers"] as? [String] == [
-            "iCloud.com.zhangruilin.yuedureader"
+            "iCloud.com.codex.yuedureader"
         ])
     }
 

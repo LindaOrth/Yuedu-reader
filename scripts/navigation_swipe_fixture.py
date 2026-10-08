@@ -30,7 +30,7 @@ MANGA_PAGES = [[(214, 69, 65), (65, 131, 215), (38, 166, 91)], [(244, 179, 80), 
 def support(simulator):
     container = subprocess.check_output([
         "xcrun", "simctl", "get_app_container", simulator,
-        "com.zhangruilin.yuedureader", "data",
+        "com.codex.yuedureader", "data",
     ], text=True).strip()
     return Path(container) / "Library/Application Support"
 

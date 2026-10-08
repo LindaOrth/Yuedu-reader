@@ -54,7 +54,7 @@ describe("entitlement policy", () => {
 
   it("accepts only Yuedu products with a matching account token", () => {
     assert.doesNotThrow(() => assertTransactionCanBind({
-      productId: "com.zhangruilin.yuedureader.pro.monthly",
+      productId: "com.codex.yuedureader.pro.monthly",
       appAccountToken: "token-a",
       environment: "Production",
     }, "token-a"));
@@ -64,7 +64,7 @@ describe("entitlement policy", () => {
       environment: "Production",
     }, "token-a"), /Unsupported product/);
     assert.throws(() => assertTransactionCanBind({
-      productId: "com.zhangruilin.yuedureader.pro.monthly",
+      productId: "com.codex.yuedureader.pro.monthly",
       appAccountToken: "token-b",
       environment: "Production",
     }, "token-a"), /different app account/);
@@ -75,12 +75,12 @@ describe("entitlement policy", () => {
     // nothing ever unlocked in TestFlight. Environment is an isolation
     // dimension, not a reason to refuse.
     assert.doesNotThrow(() => assertTransactionCanBind({
-      productId: "com.zhangruilin.yuedureader.pro.lifetime",
+      productId: "com.codex.yuedureader.pro.lifetime",
       appAccountToken: "token-a",
       environment: "Sandbox",
     }, "token-a"));
     assert.doesNotThrow(() => assertTransactionCanBind({
-      productId: "com.zhangruilin.yuedureader.pro.monthly",
+      productId: "com.codex.yuedureader.pro.monthly",
       appAccountToken: "token-a",
       environment: "Sandbox",
     }, "token-a"));

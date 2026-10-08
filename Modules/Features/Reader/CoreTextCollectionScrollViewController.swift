@@ -1727,7 +1727,7 @@ final class CoreTextCollectionScrollViewController: UIViewController, UIEditMenu
     /// cells keep their interaction owner; a snapshot revision refreshes paint.
     private(set) var viewportLayoutInvalidationCount = 0
     private static let viewportSignposter = OSSignposter(
-        subsystem: Bundle.main.bundleIdentifier ?? "com.zhangruilin.yuedureader",
+        subsystem: Bundle.main.bundleIdentifier ?? "com.codex.yuedureader",
         category: "ReaderPerformance")
 
     private func commitViewportGeometry(geometryChanged: Bool = true,

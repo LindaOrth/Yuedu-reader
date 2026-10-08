@@ -74,7 +74,7 @@ final class CoreTextPageView: UIView, UIGestureRecognizerDelegate, UIEditMenuInt
     /// render has finished. Dropped the moment the page or its bars change.
     private var prerenderedPage: PrerenderedPageSource?
     private static let displaySignposter = OSSignposter(
-        subsystem: Bundle.main.bundleIdentifier ?? "com.zhangruilin.yuedureader",
+        subsystem: Bundle.main.bundleIdentifier ?? "com.codex.yuedureader",
         category: "ReaderPerformance"
     )
     private let interactor = TextSelectionInteractor()

@@ -31,7 +31,7 @@ struct CachedSubscriptionEntitlement: Codable, Equatable {
 /// Store build was installed over the top, and was read straight back as Pro.
 enum SubscriptionEntitlementCache {
     private static var service: String {
-        "com.zhangruilin.yuedureader.subscriptionEntitlement"
+        "com.codex.yuedureader.subscriptionEntitlement"
             + SubscriptionRuntimeEnvironment.storageSuffix
     }
 

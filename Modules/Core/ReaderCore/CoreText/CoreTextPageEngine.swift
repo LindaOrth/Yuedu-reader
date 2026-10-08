@@ -1523,7 +1523,7 @@ _layouts.removeAll()
     /// rendered once.
     private var pageImagePrefetches: [NSString: Task<Void, Never>] = [:]
     private static let prefetchSignposter = OSSignposter(
-        subsystem: Bundle.main.bundleIdentifier ?? "com.zhangruilin.yuedureader",
+        subsystem: Bundle.main.bundleIdentifier ?? "com.codex.yuedureader",
         category: "ReaderPerformance"
     )
 

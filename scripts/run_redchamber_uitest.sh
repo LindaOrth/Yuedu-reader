@@ -17,7 +17,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # deleted runtime leaves same-named orphans behind. See CLAUDE.md ▸ Simulator gotchas.
 SIM_UDID="$("$ROOT/scripts/sim.sh" udid "${1:-iPhone}")"
 echo "== device: $("$ROOT/scripts/sim.sh" name "${1:-iPhone}")"
-BUNDLE_ID="com.zhangruilin.yuedureader"
+BUNDLE_ID="com.codex.yuedureader"
 EPUB_SOURCE="${YUEDU_HONGLOUMENG_EPUB_PATH:-/Users/zhangruilin/Desktop/Test document/EPUB Format/《红楼梦+大观红楼》人民文学出版.epub}"
 DERIVED="/tmp/redchamber-dd"
 APP_PATH="$DERIVED/Build/Products/Debug-iphonesimulator/YueduReader.app"

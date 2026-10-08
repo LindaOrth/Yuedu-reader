@@ -41,7 +41,7 @@ final class ShareViewController: UIViewController {
 
     private func enqueue(_ url: URL) {
         do {
-            guard let defaults = UserDefaults(suiteName: "group.com.zhangruilin.yuedureader") else {
+            guard let defaults = UserDefaults(suiteName: "group.com.codex.yuedureader") else {
                 finish(success: false, message: localized("無法儲存分享連結"))
                 return
             }

@@ -69,8 +69,8 @@ struct SubscriptionAccessPolicyTests {
         #expect(SubscriptionEntitlementRefreshPolicy.shouldApplyServerValue(documentExists: true))
     }
 
-    private static let lifetimeID = "com.zhangruilin.yuedureader.pro.lifetime"
-    private static let monthlyID = "com.zhangruilin.yuedureader.pro.monthly"
+    private static let lifetimeID = "com.codex.yuedureader.pro.lifetime"
+    private static let monthlyID = "com.codex.yuedureader.pro.monthly"
 
     private func paywallState(
         purchased: Set<String>,

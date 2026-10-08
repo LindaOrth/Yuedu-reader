@@ -6,7 +6,7 @@ import Foundation
 /// beside it so an offline launch can show the signed-in identity without a
 /// network round trip.
 enum GatewayKeychain {
-    private static let service = "com.zhangruilin.yuedureader.gatewaySession"
+    private static let service = "com.codex.yuedureader.gatewaySession"
 
     static func save(_ data: Data, account: String) -> Bool {
         let query: [String: Any] = [
