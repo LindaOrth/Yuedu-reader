@@ -190,15 +190,15 @@ struct yuedu_appApp: App {
                     }
                     // Bind the book store before the auth listener fires, so the
                     // first post-launch sync (triggered by the listener) sees it.
-                    #if !YUEDU_DISABLE_FIREBASE
-                    FirestoreSyncManager.shared.bind(bookStore: bookStore)
-                    #endif
+                    if FirebaseBootstrap.isConfigured {
+                        FirestoreSyncManager.shared.bind(bookStore: bookStore)
+                    }
                     ICloudSyncManager.shared.bind(bookStore: bookStore)
                     SharedImportQueueDrainer.shared.bind(bookStore: bookStore)
                     WebDAVManager.shared.bind(bookStore: bookStore)
-                    #if !YUEDU_DISABLE_FIREBASE
-                    _ = FirebaseAuthManager.shared
-                    #endif
+                    if FirebaseBootstrap.isConfigured {
+                        _ = FirebaseAuthManager.shared
+                    }
                     Task {
                         await AppDependencies.live.offlineDownloadManager
                             .reconcileInterruptedDownloads(store: bookStore)
