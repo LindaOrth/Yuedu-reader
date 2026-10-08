@@ -15,7 +15,9 @@ enum CrashContext {
     /// A timestamped breadcrumb that shows up in the next crash/non-fatal report's
     /// log tab. Use for user actions and subsystem milestones.
     static func breadcrumb(_ message: String) {
-        Crashlytics.crashlytics().log(message)
+        if FirebaseBootstrap.isConfigured {
+            Crashlytics.crashlytics().log(message)
+        }
         log.debug("🍞 \(message, privacy: .public)")
         DiagnosticLog.shared.record(severity: .info, category: .general, message: "🍞 \(message)")
     }
@@ -24,15 +26,21 @@ enum CrashContext {
     /// previous value for the same key). Use for "current state" (open book,
     /// reader mode, syncing…).
     static func setKey(_ key: String, _ value: String) {
-        Crashlytics.crashlytics().setCustomValue(value, forKey: key)
+        if FirebaseBootstrap.isConfigured {
+            Crashlytics.crashlytics().setCustomValue(value, forKey: key)
+        }
     }
 
     static func setKey(_ key: String, _ value: Int) {
-        Crashlytics.crashlytics().setCustomValue(value, forKey: key)
+        if FirebaseBootstrap.isConfigured {
+            Crashlytics.crashlytics().setCustomValue(value, forKey: key)
+        }
     }
 
     static func setKey(_ key: String, _ value: Bool) {
-        Crashlytics.crashlytics().setCustomValue(value, forKey: key)
+        if FirebaseBootstrap.isConfigured {
+            Crashlytics.crashlytics().setCustomValue(value, forKey: key)
+        }
     }
 
     /// Record a non-fatal error so it surfaces in Crashlytics without crashing the
@@ -45,7 +53,9 @@ enum CrashContext {
     ) {
         var info: [String: Any] = [NSLocalizedDescriptionKey: message]
         for (key, value) in extra { info[key] = value }
-        Crashlytics.crashlytics().record(error: NSError(domain: domain, code: code, userInfo: info))
+        if FirebaseBootstrap.isConfigured {
+            Crashlytics.crashlytics().record(error: NSError(domain: domain, code: code, userInfo: info))
+        }
         log.error("⚠️ non-fatal [\(domain, privacy: .public)] \(message, privacy: .public)")
         DiagnosticLog.shared.record(
             severity: .error,

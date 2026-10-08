@@ -48,6 +48,16 @@ final class FirebaseAuthManager: ObservableObject {
     private let gatewayStore = GatewaySessionStore.shared
 
     private init() {
+        // Unsigned sideload builds ship a placeholder GoogleService-Info.plist,
+        // so `Auth.auth()` would raise an Objective-C exception before the app
+        // has a window. Report the signed-out state and skip the listener:
+        // nothing can sign in without a configured FirebaseApp anyway.
+        guard FirebaseBootstrap.isConfigured else {
+            currentUser = nil
+            apply(nil, route: nil)
+            return
+        }
+
         currentUser = Auth.auth().currentUser
 
         if !GatewayConfiguration.isConfigured, gatewayStore.hasSession {

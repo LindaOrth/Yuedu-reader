@@ -11,8 +11,11 @@ import Foundation
 @MainActor
 final class FirebaseAccountBackend: AccountBackend {
     private let functionsRegion = "asia-east1"
-    private let db = Firestore.firestore()
-    private let storage = Storage.storage()
+    /// Built on demand rather than at construction: an unsigned sideload build
+    /// has no configured FirebaseApp, and `Firestore.firestore()` raises in that
+    /// state. Every entry point below refuses to run unless Firebase is up.
+    private var db: Firestore { Firestore.firestore() }
+    private var storage: Storage { Storage.storage() }
 
     /// Collections whose local shadow must be cleared when the account changes.
     static let shadowCollections = [
@@ -20,12 +23,14 @@ final class FirebaseAccountBackend: AccountBackend {
     ]
 
     func fetchProfile(uid: String) async throws -> UserProfile? {
+        guard FirebaseBootstrap.isConfigured else { throw AccountBackendError.notAuthenticated }
         let snapshot = try await userDocument(uid).getDocument()
         guard snapshot.exists else { return nil }
         return try snapshot.data(as: UserProfile.self)
     }
 
     func upsertProfile(_ profile: UserProfile) async throws {
+        guard FirebaseBootstrap.isConfigured else { throw AccountBackendError.notAuthenticated }
         let data = try Firestore.Encoder().encode(profile)
         // Await the server acknowledgement; enqueueing a local Firestore write
         // is not confirmation that a pending nickname has reached the server.
@@ -33,6 +38,7 @@ final class FirebaseAccountBackend: AccountBackend {
     }
 
     func uploadAvatar(data: Data) async throws -> URL {
+        guard FirebaseBootstrap.isConfigured else { throw AccountBackendError.notAuthenticated }
         guard let uid = FirebaseAuthManager.shared.uid else {
             throw AccountBackendError.notAuthenticated
         }
@@ -49,6 +55,7 @@ final class FirebaseAccountBackend: AccountBackend {
     }
 
     func refreshEntitlement(uid: String) async throws -> CachedSubscriptionEntitlement? {
+        guard FirebaseBootstrap.isConfigured else { return nil }
         // Without a resolved environment there is no correct field to read:
         // defaulting to `isProActive` would hand the App Store entitlement to a
         // TestFlight build. Nothing to say beats saying the wrong thing.
@@ -69,6 +76,7 @@ final class FirebaseAccountBackend: AccountBackend {
     }
 
     func accountToken() async throws -> UUID {
+        guard FirebaseBootstrap.isConfigured else { throw AccountBackendError.notAuthenticated }
         let result = try await Functions.functions(region: functionsRegion)
             .httpsCallable("getSubscriptionAccountToken")
             .call()
@@ -81,6 +89,7 @@ final class FirebaseAccountBackend: AccountBackend {
     }
 
     func bind(signedTransaction: String) async throws -> CachedSubscriptionEntitlement {
+        guard FirebaseBootstrap.isConfigured else { throw AccountBackendError.notAuthenticated }
         let result = try await Functions.functions(region: functionsRegion)
             .httpsCallable("bindSubscriptionPurchase")
             .call(["signedTransaction": signedTransaction])
@@ -88,12 +97,14 @@ final class FirebaseAccountBackend: AccountBackend {
     }
 
     func deleteSubscriptionAccountData() async throws {
+        guard FirebaseBootstrap.isConfigured else { throw AccountBackendError.notAuthenticated }
         _ = try await Functions.functions(region: functionsRegion)
             .httpsCallable("deleteSubscriptionAccountData")
             .call()
     }
 
     func verifyTestFlightAccess() async throws -> Bool {
+        guard FirebaseBootstrap.isConfigured else { throw AccountBackendError.notAuthenticated }
         let result = try await Functions.functions(region: functionsRegion)
             .httpsCallable("verifyTestFlightAccess").call()
         guard let data = result.data as? [String: Any], let allowed = data["allowed"] as? Bool else {
@@ -103,6 +114,7 @@ final class FirebaseAccountBackend: AccountBackend {
     }
 
     func requestTestFlightAccess(email: String) async throws -> TestFlightAccessResult {
+        guard FirebaseBootstrap.isConfigured else { throw AccountBackendError.notAuthenticated }
         let result = try await Functions.functions(region: functionsRegion)
             .httpsCallable("requestTestFlightAccess")
             .call(["email": email])
@@ -115,6 +127,7 @@ final class FirebaseAccountBackend: AccountBackend {
     }
 
     func deleteRemoteData(uid: String) async throws {
+        guard FirebaseBootstrap.isConfigured else { throw AccountBackendError.notAuthenticated }
         let userRef = userDocument(uid)
         for collection in Self.shadowCollections + ["readingPositions"] {
             try await deleteCollection(userRef.collection(collection))

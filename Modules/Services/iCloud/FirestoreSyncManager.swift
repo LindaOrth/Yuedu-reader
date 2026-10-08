@@ -20,7 +20,7 @@ final class FirestoreSyncManager: ObservableObject {
 
     @Published private(set) var state: SyncState = .idle
 
-    private let db = Firestore.firestore()
+    private let db: Firestore?
     private var cancellables = Set<AnyCancellable>()
     private var pushWorkItems: [String: Task<Void, Never>] = [:]
     private var pendingPositions: [String: CoreTextReadingPosition] = [:]
@@ -43,6 +43,15 @@ final class FirestoreSyncManager: ObservableObject {
     static let dataSyncEnabled = false
 
     private init() {
+        // Unsigned sideload builds ship a placeholder GoogleService-Info.plist,
+        // so there is no FirebaseApp for Firestore to attach to. Leaving `db`
+        // nil keeps construction safe; every cloud path below reports the
+        // signed-out state instead.
+        db = FirebaseBootstrap.isConfigured ? Firestore.firestore() : nil
+        if !FirebaseBootstrap.isConfigured {
+            observeSharedStores()
+            return
+        }
         // The auth facade publishes its restored account to GlobalSettings in
         // init. Finish that construction before observing settings; otherwise
         // schedulePush re-enters FirebaseAuthManager.shared's dispatch_once.
@@ -233,7 +242,7 @@ final class FirestoreSyncManager: ObservableObject {
     }
 
     private func writeReadingPosition(_ position: CoreTextReadingPosition, for bookId: String) async throws {
-        guard let uid = FirebaseAuthManager.shared.uid else { return }
+        guard FirebaseBootstrap.isConfigured, let uid = FirebaseAuthManager.shared.uid else { return }
         let envelope = SyncEnvelope(id: bookId, value: position, updatedAt: Date())
         try userDocument(uid).collection("readingPositions").document(bookId).setData(from: envelope, merge: true)
     }
@@ -325,7 +334,7 @@ final class FirestoreSyncManager: ObservableObject {
         isApplyingRemote = true
         defer { isApplyingRemote = false }
 
-        let userRef = userDocument(uid)
+        let userRef = try userDocument(uid)
         if let profile {
             guard profile.uid == uid else { throw AccountBackendError.invalidResponse }
             GlobalSettings.shared.applyFirebaseProfile(
@@ -458,7 +467,7 @@ final class FirestoreSyncManager: ObservableObject {
         try await pushCollection(
             stripped,
             key: "books",
-            collection: userDocument(uid).collection("books"),
+            collection: try userDocument(uid).collection("books"),
             id: { $0.id.uuidString },
             hash: { [weak self] in self?.stableHash($0) ?? "" }
         )
@@ -469,7 +478,7 @@ final class FirestoreSyncManager: ObservableObject {
         try await pushCollection(
             BookSourceStore.shared.sources,
             key: "bookSources",
-            collection: userDocument(uid).collection("bookSources"),
+            collection: try userDocument(uid).collection("bookSources"),
             id: { $0.id.uuidString },
             hash: { [weak self] in self?.stableHash($0) ?? "" }
         )
@@ -480,7 +489,7 @@ final class FirestoreSyncManager: ObservableObject {
         try await pushCollection(
             ReplaceRuleStore.shared.rules,
             key: "replaceRules",
-            collection: userDocument(uid).collection("replaceRules"),
+            collection: try userDocument(uid).collection("replaceRules"),
             id: { $0.id },
             hash: { [weak self] in self?.stableHash($0) ?? "" }
         )
@@ -488,7 +497,7 @@ final class FirestoreSyncManager: ObservableObject {
 
     private func pushRSS() async throws {
         guard let uid = FirebaseAuthManager.shared.uid else { return }
-        let userRef = userDocument(uid)
+        let userRef = try userDocument(uid)
         try await pushCollection(
             RSSStore.shared.sources,
             key: "rssSources",
@@ -551,6 +560,7 @@ final class FirestoreSyncManager: ObservableObject {
 
     private func commitInChunks(_ operations: [(DocumentReference, [String: Any])]) async throws {
         guard !operations.isEmpty else { return }
+        guard let db else { throw AccountBackendError.notAuthenticated }
         let chunkSize = 450 // Firestore batch limit is 500
         var index = 0
         while index < operations.count {
@@ -591,8 +601,9 @@ final class FirestoreSyncManager: ObservableObject {
         return result
     }
 
-    private func userDocument(_ uid: String) -> DocumentReference {
-        db.collection("users").document(uid)
+    private func userDocument(_ uid: String) throws -> DocumentReference {
+        guard let db else { throw AccountBackendError.notAuthenticated }
+        return db.collection("users").document(uid)
     }
 
     private func markSynced() {

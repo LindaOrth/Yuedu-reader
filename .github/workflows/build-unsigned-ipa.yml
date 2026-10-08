@@ -87,6 +87,12 @@ jobs:
         run: |
           APP_PATH="$RUNNER_TEMP/YueduReader.xcarchive/Products/Applications/YueduReader.app"
           test -d "$APP_PATH"
+          # This build has no provisioning profile, so CloudKit/iCloud cannot
+          # work in it. Stamp the app so BuildCapabilities keeps those services
+          # inert instead of trapping inside CKContainer at launch.
+          /usr/libexec/PlistBuddy -c "Add :YueduUnsignedBuild bool true" "$APP_PATH/Info.plist" \
+            || /usr/libexec/PlistBuddy -c "Set :YueduUnsignedBuild true" "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c "Print :YueduUnsignedBuild" "$APP_PATH/Info.plist"
           rm -rf "$RUNNER_TEMP/Payload"
           mkdir -p "$RUNNER_TEMP/Payload"
           cp -R "$APP_PATH" "$RUNNER_TEMP/Payload/"

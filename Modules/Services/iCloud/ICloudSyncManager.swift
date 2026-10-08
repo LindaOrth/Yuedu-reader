@@ -220,8 +220,8 @@ final class ICloudSyncManager: ObservableObject {
         static let updatedAt = "updatedAt"
     }
 
-    private let container: CKContainer
-    private let database: CKDatabase
+    private let container: CKContainer?
+    private let database: CKDatabase?
 
     private static var deviceId: String {
         if let id = UserDefaults.standard.string(forKey: deviceIdKey) { return id }
@@ -230,9 +230,19 @@ final class ICloudSyncManager: ObservableObject {
         return id
     }
 
-    private init(container: CKContainer = CKContainer(identifier: ICloudSyncManager.containerIdentifier)) {
-        self.container = container
-        database = container.privateCloudDatabase
+    private init() {
+        // Constructing a CKContainer whose identifier is missing from the app's
+        // iCloud entitlements raises an Objective-C exception. Unsigned sideload
+        // builds (and LiveContainer, which never applies guest entitlements)
+        // therefore get no container and every CloudKit call reports unavailable.
+        if BuildCapabilities.isCloudKitAvailable {
+            let container = CKContainer(identifier: ICloudSyncManager.containerIdentifier)
+            self.container = container
+            database = container.privateCloudDatabase
+        } else {
+            container = nil
+            database = nil
+        }
         lastSyncDate = UserDefaults.standard.object(forKey: Self.lastSyncKey) as? Date
     }
 
@@ -1132,7 +1142,8 @@ final class ICloudSyncManager: ObservableObject {
     }
 
     private func fetchAccountStatus() async -> CKAccountStatus {
-        await withCheckedContinuation { continuation in
+        guard let container else { return .couldNotDetermine }
+        return await withCheckedContinuation { continuation in
             container.accountStatus { status, _ in
                 continuation.resume(returning: status)
             }
@@ -1417,6 +1428,7 @@ final class ICloudSyncManager: ObservableObject {
     }
 
     private func fetchRecord(_ recordID: CKRecord.ID) async throws -> CKRecord {
+        guard let database else { throw CKError(.notAuthenticated) }
         try await withCheckedThrowingContinuation { continuation in
             database.fetch(withRecordID: recordID) { record, error in
                 if let error {
@@ -1436,6 +1448,7 @@ final class ICloudSyncManager: ObservableObject {
     /// behind, the asset with it, so a blob of any size costs one small round trip. Nil when
     /// there is no such record.
     private func fetchRecordChangeTag(_ recordID: CKRecord.ID) async throws -> String? {
+        guard let database else { throw CKError(.notAuthenticated) }
         try await withCheckedThrowingContinuation { continuation in
             let operation = CKFetchRecordsOperation(recordIDs: [recordID])
             operation.desiredKeys = []
@@ -1473,6 +1486,7 @@ final class ICloudSyncManager: ObservableObject {
     }
 
     private func deleteRecord(_ recordID: CKRecord.ID) async throws {
+        guard let database else { throw CKError(.notAuthenticated) }
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             database.delete(withRecordID: recordID) { _, error in
                 if let error {
@@ -1485,6 +1499,7 @@ final class ICloudSyncManager: ObservableObject {
     }
 
     private func saveRecord(_ record: CKRecord) async throws {
+        guard let database else { throw CKError(.notAuthenticated) }
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             database.save(record) { _, error in
                 if let error {
