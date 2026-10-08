@@ -198,7 +198,7 @@ final class SubscriptionICloudMirror {
 
     private func fetchRecord(_ recordID: CKRecord.ID) async throws -> CKRecord {
         guard let database else { throw CKError(.unknownItem) }
-        try await withCheckedThrowingContinuation { continuation in
+        return try await withCheckedThrowingContinuation { continuation in
             database.fetch(withRecordID: recordID) { record, error in
                 if let error {
                     continuation.resume(throwing: error)
@@ -215,7 +215,7 @@ final class SubscriptionICloudMirror {
 
     private func saveRecord(_ record: CKRecord) async throws {
         guard let database else { throw CKError(.notAuthenticated) }
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             database.save(record) { _, error in
                 if let error {
                     continuation.resume(throwing: error)

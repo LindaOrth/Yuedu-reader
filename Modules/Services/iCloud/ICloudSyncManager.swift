@@ -1429,7 +1429,7 @@ final class ICloudSyncManager: ObservableObject {
 
     private func fetchRecord(_ recordID: CKRecord.ID) async throws -> CKRecord {
         guard let database else { throw CKError(.notAuthenticated) }
-        try await withCheckedThrowingContinuation { continuation in
+        return try await withCheckedThrowingContinuation { continuation in
             database.fetch(withRecordID: recordID) { record, error in
                 if let error {
                     continuation.resume(throwing: error)
@@ -1449,7 +1449,7 @@ final class ICloudSyncManager: ObservableObject {
     /// there is no such record.
     private func fetchRecordChangeTag(_ recordID: CKRecord.ID) async throws -> String? {
         guard let database else { throw CKError(.notAuthenticated) }
-        try await withCheckedThrowingContinuation { continuation in
+        return try await withCheckedThrowingContinuation { continuation in
             let operation = CKFetchRecordsOperation(recordIDs: [recordID])
             operation.desiredKeys = []
             // Both blocks run on the operation's own serial queue: the record's result
@@ -1487,7 +1487,7 @@ final class ICloudSyncManager: ObservableObject {
 
     private func deleteRecord(_ recordID: CKRecord.ID) async throws {
         guard let database else { throw CKError(.notAuthenticated) }
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             database.delete(withRecordID: recordID) { _, error in
                 if let error {
                     continuation.resume(throwing: error)
@@ -1500,7 +1500,7 @@ final class ICloudSyncManager: ObservableObject {
 
     private func saveRecord(_ record: CKRecord) async throws {
         guard let database else { throw CKError(.notAuthenticated) }
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             database.save(record) { _, error in
                 if let error {
                     continuation.resume(throwing: error)
